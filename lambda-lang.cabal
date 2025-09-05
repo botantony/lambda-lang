@@ -1,0 +1,30 @@
+cabal-version:      3.0
+name:               lambda-lang
+version:            0.1.0
+synopsis:           Simple language based on lambda calculus
+-- description:
+license:            MIT
+license-file:       LICENSE
+author:             botantony
+maintainer:         antonsm21@gmail.com
+-- copyright:
+category:           Language
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+-- extra-source-files:
+
+common warnings
+    ghc-options: -Wall -Wno-name-shadowing
+
+executable lambda
+    import:           warnings
+    main-is:          Main.hs
+    ghc-options:      -O2
+
+    other-modules:    Interpreter
+                      Lang
+                      Parser
+    -- other-extensions:
+    build-depends:    containers, base ^>= 4.21.0.0, haskeline
+    hs-source-dirs:   src
+    default-language: Haskell2010
