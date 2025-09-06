@@ -26,5 +26,5 @@ When running repl all your input is interpreted as a program that needs to be ev
 - `unset <variable name>`: remove value from the environment
 
 ## Todos:
-- Improve error messages
-- Use memoiaztion for recursive functions and add other optimizations
+- [ ] Improve error messages
+- [x] Use memoiaztion for recursive functions and add other optimizations
