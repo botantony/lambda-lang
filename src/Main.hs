@@ -12,7 +12,7 @@ import System.Console.Haskeline
 type ExternalEnv = [(VarName, Expr)]
 
 version :: String
-version = "0.1.0"
+version = "0.1.1"
 
 showExtEnv :: ExternalEnv -> String
 showExtEnv extEnv = "[" ++ intercalate ", " (map go extEnv) ++ "]"

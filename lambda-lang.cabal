@@ -1,6 +1,6 @@
 cabal-version:      3.0
 name:               lambda-lang
-version:            0.1.0
+version:            0.1.1
 synopsis:           Simple language based on lambda calculus
 -- description:
 license:            MIT
@@ -25,6 +25,9 @@ executable lambda
                       Lang
                       Parser
     -- other-extensions:
-    build-depends:    containers, base ^>= 4.21.0.0, haskeline
+    build-depends:    base ^>= 4.21.0.0
+                      , containers
+                      , haskeline
+                      , mtl
     hs-source-dirs:   src
     default-language: Haskell2010

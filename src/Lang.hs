@@ -11,7 +11,7 @@ data Expr
     | App { body :: Expr, arg :: Expr }
     | Let { recursive :: Bool, varName :: VarName, body :: Expr, expr :: Expr }
     | Cond { predicate :: Expr, ifBranch :: Expr, elseBranch :: Expr }
-    deriving (Show, Eq)
+    deriving (Show, Eq, Ord)
 
 formatExpr :: Expr -> String
 formatExpr (Var i) = i
