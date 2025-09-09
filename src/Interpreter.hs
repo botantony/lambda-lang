@@ -138,10 +138,10 @@ evalCache env (App abst arg) = do
             lift $ fn argVal
         _ -> lift $ Left $ NotAFunction abstVal
 
-showEval :: Expr -> String
+showEval :: Expr -> Either String String
 showEval expr = case runEval defaultEnv expr of
-    Left err -> show err
-    Right val -> show val
+    Left err -> Left $ show err
+    Right val -> Right $ show val
 
 printEval :: Expr -> IO ()
 printEval = print . showEval

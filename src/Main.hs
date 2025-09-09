@@ -1,11 +1,13 @@
 module Main where
 
+import Control.Monad.Trans (lift)
 import Data.Char (isAlpha)
 import Data.List (intercalate)
 import Interpreter
 import Lang
 import Parser
 import System.Environment
+import System.IO (hPutStrLn, stderr)
 
 import System.Console.Haskeline
 
@@ -29,10 +31,10 @@ isValidVarName str = all isAlpha str && str `notElem` keywords
     where
         keywords = ["let", "rec", "in", "if", "then", "else"]
 
-execProgram :: String -> ExternalEnv -> String
+execProgram :: String -> ExternalEnv -> Either String String
 execProgram str extEnv = case parseExpr str of
-    Left errs  -> errs
-    Right expr -> showEval (exprWithEnv extEnv expr)
+    Left errs  -> Left errs
+    Right expr -> showEval $ exprWithEnv extEnv expr
 
 exprWithEnv :: ExternalEnv -> Expr -> Expr
 exprWithEnv [] expr = expr
@@ -61,7 +63,9 @@ repl extEnv = do
             | str `beginsWith` "unset " -> do
                 let varName = drop 6 str in evalAndModifyEnv varName False
             | otherwise -> do
-                outputStrLn $ execProgram str (reverse extEnv)
+                case execProgram str (reverse extEnv) of
+                    Left errs -> lift $ hPutStrLn stderr errs
+                    Right res -> outputStrLn res
                 repl extEnv
     where
         helpMessage = "Options: `h` or `help`: print this message\n`env`: print current environment\n"
@@ -71,7 +75,7 @@ repl extEnv = do
         evalAndModifyEnv :: VarName -> Bool -> InputT IO ()
         evalAndModifyEnv varName inserts = case (isValidVarName varName, inserts) of
             (False, _) -> do
-                outputStrLn $ "`" ++ varName ++ "` is not a valid variable name"
+                lift $ hPutStrLn stderr $ "`" ++ varName ++ "` is not a valid variable name"
                 repl extEnv
             (_, False) -> repl $ removeFromEnv varName extEnv
             (_, True)  -> addNewVar varName
@@ -100,10 +104,13 @@ main = do
             content <- readFile file
             print $ execProgram content []
         [] -> runInputT defaultSettings $ repl []
-        _  -> putStrLn $ "Unexpected input!\n" ++ usageMessage
+        _  -> do
+            putStrLn $ "Unexpected input!\n"
+            hPutStrLn stderr usageMessage
     where
         usageMessage = "Usage: lamda [file]\n"
             ++ "  no input: run repl"
             ++ "  --help or -h: show this page\n"
             ++ "  --version or -v: show version of the program\n"
             ++ "  <file>: execute program from file\n"
+            ++ "  no options: run the interpreter\n"
